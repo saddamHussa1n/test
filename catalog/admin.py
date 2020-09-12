@@ -35,3 +35,4 @@ class BookInstanceAdmin(admin.ModelAdmin):
     )
 
 admin.site.register(Genre)
+

@@ -16,6 +16,9 @@
         <p><strong>Due to be returned:</strong>{{ copy.due_back }}</p>
             <p><strong>imprint:</strong>{{ copy.imprint }}</p>
             <p class="text-muted"><strong>ID: </strong>{{ copy.id }}</p>
+            {% if request.user.is_autenticated%}
+                <a href="{% url 'renew-book-librarian' copy.id%}">Renew</a>
+            {% endif %}
         {% endif %}
     {% endfor %}
     </div>

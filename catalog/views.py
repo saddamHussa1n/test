@@ -1,9 +1,12 @@
+import datetime
+
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
 from django.views.generic import TemplateView, ListView, DetailView
 
+from catalog.catalog.forms import RenewBookForm
 from catalog.models import *
 
 
@@ -45,3 +48,26 @@ class LoanedBooksByUserListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return BookInstance.objects.filter(borrower=self.request.user).filter(status='o').order_by('due_back')
+
+
+class RenewBookView(LoginRequiredMixin, TemplateView):
+    template_name = 'catalog/book_renew_librarian.html'
+
+    def get_content_data(self, **kwargs):
+        context = super(RenewBookView, self).get_context_data(**kwargs)
+        context['bookinst'] = get_object_or_404(BookInstance, id=kwargs.get('pk'))
+        context['form'] = RenewBookForm(initial={'renewal_date': date.today() + datetime.timedelta(weeks=3)})
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        form = RenewBookForm(self.request.POST or None)
+        book_inst = context['boolinst']
+
+        if form.is_valid():
+            book_inst.due_back = form.cleaned_data['renewal_date']
+            book_inst.save()
+            return redirect('my-borrowed')
+
+        context['form'] = form
+        return render(request, self.template_name, context)
