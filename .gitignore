@@ -5,6 +5,7 @@
 *__pycache__/
 .idea
 db.sqlite3
+.secret.env
 
 #git init
 

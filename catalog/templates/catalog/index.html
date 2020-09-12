@@ -6,11 +6,11 @@ Home page
 
 {% block content %}
     <h1>Local Library Home</h1>
-
-    <p>Num books: {{ num_books }}</p>
-    <p>Num instanses: {{ num_instanses }}</p>
-    <p>Num instanses available: {{ num_instances_available }}</p>
-    <p>Num authors: {{ num_authors }}</p>
-
-    <p>Вы посетили этот сайт {{ num_visits }} раз.</p>
+    <ul>
+        <li>Num books: {{ num_books }}</li>
+        <li>Num instances: {{ num_instances }}</li>
+        <li>Num instances available: {{ num_instances_available }}</li>
+        <li>Num author: {{ num_authors }}</li>
+    </ul>
+    <p>Вы посетили этот сайт {{ num_visits }} {% if num_visits == 1 %} раз{% else %} раза {% endif %}.</p>
 {% endblock %}

@@ -1,26 +1,14 @@
 import uuid
+from datetime import date
 
 from django.contrib.auth.models import User
 from django.db import models
-
-# Create your models here.
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.datetime_safe import date
-
-
-class Author(models.Model):
-    first_name = models.CharField(max_length=100, verbose_name='Имя')
-    last_name = models.CharField(max_length=100, verbose_name='Фамилия')
-    date_of_birth = models.DateField(null=True, blank=True)
-    date_of_death = models.DateField('Died', null=True, blank=True)
-
-    def __str__(self):
-        return f'{self.first_name} {self.last_name}'
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=200, help_text='Введите жанр книги')
+    name = models.CharField(max_length=200, help_text='Введите жанр книги.')
 
     def __str__(self):
         return self.name
@@ -43,12 +31,22 @@ class Book(models.Model):
         return reverse('book-detail', args=[str(self.id)])
 
 
+class Author(models.Model):
+    first_name = models.CharField(max_length=100, verbose_name='Имя')
+    last_name = models.CharField(max_length=100, verbose_name='Фамилия')
+    date_of_birth = models.DateField(null=True, blank=True, verbose_name='Дата рождения')
+    date_of_death = models.DateField('Died', null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
+
+
 class BookInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True)
     imprint = models.CharField(max_length=200)
     due_back = models.DateField(null=True, blank=True)
-    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     LOAN_STATUS = (('m', 'Maintenance'),
                    ('o', 'On load'),
                    ('a', 'Available'),

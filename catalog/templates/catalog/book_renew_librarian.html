@@ -2,19 +2,21 @@
 {% block content %}
     <h1>Renew: {{ bookinst.book.title }}</h1>
     <p>Borrower: {{ bookinst.borrower }}</p>
-    <p>{% if boorinst.is_overdue %} class="text-danger"{% endif %}>Gue date: {{ bookinst.due_back }}</p>
+    <p {% if boorinst.is_overdue %} class="text-danger" {% endif %}>Due date: {{ bookinst.due_back }}</p>
 
-    <form action="{% url 'renew-book-librarian' bookinst.id %}" method="post">
+    <form action="" method="post">
     {% if form.subject.errors %}
-        <ol>
-        {% for error in form.subject.errors %}
-            <li><strong>{{ error|escape }}</strong></li>
-        {% endfor %}
+    <ol>
+    {% for error in form.subject.errors %}
+        <li><strong>{{ error|escape }}</strong></li>
+    {% endfor %}
 
-        </ol>
+    </ol>
     {% endif %}
         {% csrf_token %}
-        <table>{{ form }}</table>
+        <table>
+            {{ form }}
+        </table>
         <input type="submit" value="Submit">
     </form>
 

@@ -2,11 +2,9 @@ import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
-
-# Create your views here.
 from django.views.generic import TemplateView, ListView, DetailView
 
-from catalog.catalog.forms import RenewBookForm
+from catalog.forms import RenewBookForm
 from catalog.models import *
 
 
@@ -18,14 +16,14 @@ class IndexView(TemplateView):
         num_books = Book.objects.all().count()
         num_instances = BookInstance.objects.all().count()
         num_instances_available = BookInstance.objects.filter(status='a').count()
-        num_autors = Author.objects.all().count()
+        num_authors = Author.objects.all().count()
         num_visits = request.session.get('num_visits', 1)
         request.session['num_visits'] = num_visits + 1
         context.update({
             'num_books': num_books,
             'num_instances': num_instances,
             'num_instances_available': num_instances_available,
-            'num_authors': num_autors,
+            'num_authors': num_authors,
             'num_visits': num_visits
         })
 
@@ -34,7 +32,7 @@ class IndexView(TemplateView):
 
 class BookListView(ListView):
     model = Book
-    paginate_by = 1
+    paginate_by = 2
 
 
 class BookDetailView(DetailView):
@@ -43,7 +41,7 @@ class BookDetailView(DetailView):
 
 class LoanedBooksByUserListView(LoginRequiredMixin, ListView):
     model = BookInstance
-    template_name = 'bookinstance_list_borrowed_user.html'
+    template_name = 'catalog/bookinstance_list_borrowed_user.html'
     paginate_by = 10
 
     def get_queryset(self):
@@ -53,16 +51,16 @@ class LoanedBooksByUserListView(LoginRequiredMixin, ListView):
 class RenewBookView(LoginRequiredMixin, TemplateView):
     template_name = 'catalog/book_renew_librarian.html'
 
-    def get_content_data(self, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super(RenewBookView, self).get_context_data(**kwargs)
-        context['bookinst'] = get_object_or_404(BookInstance, id=kwargs.get('pk'))
+        context['bookinst'] = get_object_or_404(BookInstance, pk=kwargs.get('pk'))
         context['form'] = RenewBookForm(initial={'renewal_date': date.today() + datetime.timedelta(weeks=3)})
         return context
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         form = RenewBookForm(self.request.POST or None)
-        book_inst = context['boolinst']
+        book_inst = context['bookinst']
 
         if form.is_valid():
             book_inst.due_back = form.cleaned_data['renewal_date']
